@@ -31,6 +31,13 @@ namespace Innovation.Development.DAL.Persistence.Data
             modelBuilder.Entity<Student>()
                  .HasMany(s => s.Subjects)
                 .WithMany(s => s.Students);
+            // Seed initial subjects data
+            modelBuilder.Entity<Subject>().HasData(
+            new Subject { Id = 1, Name = "Arabic" },
+            new Subject { Id = 2, Name = "English" },
+            new Subject { Id = 3, Name = "Science" },
+            new Subject { Id = 4, Name = "History" }
+                        );
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
 
