@@ -1,3 +1,6 @@
+using Innovation.Development.DAL.Persistence.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace Innovation_Development
 {
     public class Program
@@ -8,7 +11,9 @@ namespace Innovation_Development
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionStrings"))
+            );
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
