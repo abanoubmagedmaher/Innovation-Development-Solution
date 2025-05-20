@@ -8,12 +8,10 @@
 
   <ItemGroup>
     <Folder Include="Common\Enums\" />
-    <Folder Include="Interfaces\" />
     <Folder Include="Persistence\Data\Migrations\" />
     <Folder Include="Persistence\Data\DbInitializer\" />
     <Folder Include="Persistence\Data\Seeds\" />
     <Folder Include="Persistence\UnitOfWork\" />
-    <Folder Include="Persistence\Repositories\" />
   </ItemGroup>
 
   <ItemGroup>
