@@ -7,12 +7,9 @@ using System.Threading.Tasks;
 
 namespace Innovation.Development.DAL.contracts.Repositories
 {
-    public interface IStudentsRepository
+    public interface ISubjectsRepository
     {
-        IEnumerable<Student> GetAll(bool withTracking=false);
-        Student? Get(int id);
-        void  Add(Student student);
-        void  Update(Student student);
-        void  Delete(int id);
+        IEnumerable<Subject> GetAll(bool withTracking = false);
+
     }
 }

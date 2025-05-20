@@ -32,25 +32,24 @@ namespace Innovation.Development.DAL.Persistence.Repositories
             var Students = _dbContext.Students.Find(id);
             return Students;
         }
-        public int Add(Student student)
+        public void Add(Student student)
         {
              _dbContext.Students.Add(student);
-            return _dbContext.SaveChanges();
+          
         }
-        public int Update(Student student)
+        public void Update(Student student)
         {
             _dbContext.Students.Update(student);
-            return _dbContext.SaveChanges();
+          
         }
-        public int Delete(int id)
+        public void Delete(int id)
         {
             var student = _dbContext.Students.Find(id);
             if (student != null)
             {
                 _dbContext.Students.Remove(student);
-                return _dbContext.SaveChanges();
+               
             }
-            return 0;
         }
 
         
