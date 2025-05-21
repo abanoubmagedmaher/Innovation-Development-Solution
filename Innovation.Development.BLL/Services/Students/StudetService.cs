@@ -1,4 +1,4 @@
-﻿﻿﻿using Innovation.Development.BLL.Models.Students;
+﻿﻿﻿﻿﻿﻿﻿using Innovation.Development.BLL.Models.Students;
 using Innovation.Development.DAL.contracts;
 using Innovation.Development.DAL.Entities.Students;
 using System;
@@ -36,26 +36,45 @@ namespace Innovation.Development.BLL.Services.Students
         }
         public int CreateStudent(CreateStudentDto student)
         {
-            // Get existing subjects from the database
-            var existingSubjects = new List<Subject>();
-            if (student.Subjects != null && student.Subjects.Any())
-            {
-                var subjectIds = student.Subjects.Select(s => s.Id).ToList();
-                existingSubjects = _unitOfWork.SubjectsRepository.GetAll()
-                    .Where(s => subjectIds.Contains(s.Id))
-                    .ToList();
-            }
-
-            var StudentToCreate = new Student()
+            // Create a new student without subjects first
+            var studentToCreate = new Student()
             {
                 Name = student.Name,
                 Address = student.Address,
                 DateOfBirth = student.DateOfBirth,
-                Subjects = existingSubjects
+                Subjects = new List<Subject>()
             };
 
-            _unitOfWork.StudentsRepository.Add(StudentToCreate);
-            return _unitOfWork.Complete();
+            // Add the student to the database
+            _unitOfWork.StudentsRepository.Add(studentToCreate);
+            _unitOfWork.Complete(); // Save to get the student ID
+
+            // If there are subjects to add, retrieve them from the database and attach them
+            if (student.Subjects != null && student.Subjects.Any())
+            {
+                // Get the student with tracking enabled
+                var createdStudent = _unitOfWork.StudentsRepository.Get(studentToCreate.Id);
+                if (createdStudent != null)
+                {
+                    // Get the subject IDs
+                    var subjectIds = student.Subjects.Select(s => s.Id).ToList();
+                    
+                    // For each subject ID, find the subject in the database and add it to the student
+                    foreach (var subjectId in subjectIds)
+                    {
+                        var subject = _unitOfWork.SubjectsRepository.Get(subjectId);
+                        if (subject != null)
+                        {
+                            createdStudent.Subjects.Add(subject);
+                        }
+                    }
+                    
+                    // Save the changes
+                    return _unitOfWork.Complete();
+                }
+            }
+
+            return 1; // Return success
         }
         
         public int UpdateStudent(StudentDto student)
@@ -72,22 +91,28 @@ namespace Innovation.Development.BLL.Services.Students
             existingStudent.Address = student.Address;
             existingStudent.DateOfBirth = student.DateOfBirth;
 
-            // Update subjects
+            // Clear existing subjects
             existingStudent.Subjects.Clear();
+            _unitOfWork.Complete(); // Save the changes to clear the subjects
+
+            // Add selected subjects
             if (student.Subjects != null && student.Subjects.Any())
             {
+                // Get the subject IDs
                 var subjectIds = student.Subjects.Select(s => s.Id).ToList();
-                var existingSubjects = _unitOfWork.SubjectsRepository.GetAll()
-                    .Where(s => subjectIds.Contains(s.Id))
-                    .ToList();
                 
-                foreach (var subject in existingSubjects)
+                // For each subject ID, find the subject in the database and add it to the student
+                foreach (var subjectId in subjectIds)
                 {
-                    existingStudent.Subjects.Add(subject);
+                    var subject = _unitOfWork.SubjectsRepository.Get(subjectId);
+                    if (subject != null)
+                    {
+                        existingStudent.Subjects.Add(subject);
+                    }
                 }
             }
 
-            _unitOfWork.StudentsRepository.Update(existingStudent);
+            // Save the changes
             return _unitOfWork.Complete();
         }
 

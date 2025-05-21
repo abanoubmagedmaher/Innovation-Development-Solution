@@ -1,4 +1,4 @@
-﻿using Innovation.Development.DAL.contracts.Repositories;
+﻿﻿using Innovation.Development.DAL.contracts.Repositories;
 using Innovation.Development.DAL.Entities.Students;
 using Innovation.Development.DAL.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
@@ -22,15 +22,22 @@ namespace Innovation.Development.DAL.Persistence.Repositories
         {
             if (!withTracking)
             {
-                return _dbContext.Students.AsNoTracking().ToList();
+                return _dbContext.Students
+                    .Include(s => s.Subjects)
+                    .AsNoTracking()
+                    .ToList();
             }
-            return _dbContext.Students.ToList();
+            return _dbContext.Students
+                .Include(s => s.Subjects)
+                .ToList();
             
         }
         public Student? Get(int id)
         {
-            var Students = _dbContext.Students.Find(id);
-            return Students;
+            var student = _dbContext.Students
+                .Include(s => s.Subjects)
+                .FirstOrDefault(s => s.Id == id);
+            return student;
         }
         public void Add(Student student)
         {

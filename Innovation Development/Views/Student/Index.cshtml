@@ -9,14 +9,14 @@
         <div class="col">
             <h2>Students</h2>
         </div>
-        <div class="col text-end">
+       @*  <div class="col text-end">
             <a asp-action="Create" class="btn btn-primary">Add New Student</a>
-        </div>
+        </div> *@
     </div>
 
     <div class="card mb-4">
         <div class="card-header">
-            <h5 class="card-title mb-0">Student Form</h5>
+            <h5 class="card-title mb-0">Create Student Form</h5>
         </div>
         <div class="card-body">
             <form asp-action="Create" method="post">
@@ -86,12 +86,7 @@
                                     <td>
                                         @if (student.Subjects != null && student.Subjects.Any())
                                         {
-                                            <ul class="list-unstyled mb-0">
-                                                @foreach (var subject in student.Subjects)
-                                                {
-                                                    <li><span class="badge bg-primary">@subject.Name</span></li>
-                                                }
-                                            </ul>
+                                            <span>@string.Join(" - ", student.Subjects.Select(s => s.Name))</span>
                                         }
                                         else
                                         {

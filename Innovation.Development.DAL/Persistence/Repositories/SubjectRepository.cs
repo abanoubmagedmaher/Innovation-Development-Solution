@@ -1,4 +1,4 @@
-﻿using Innovation.Development.DAL.contracts.Repositories;
+﻿﻿using Innovation.Development.DAL.contracts.Repositories;
 using Innovation.Development.DAL.Entities.Students;
 using Innovation.Development.DAL.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +18,7 @@ namespace Innovation.Development.DAL.Persistence.Repositories
         {
             _dbContext = dbContext;
         }
+        
         public IEnumerable<Subject> GetAll(bool withTracking = false)
         {
             if (!withTracking)
@@ -25,6 +26,11 @@ namespace Innovation.Development.DAL.Persistence.Repositories
                 return _dbContext.Subjects.AsNoTracking().ToList();
             }
             return _dbContext.Subjects.ToList();
+        }
+        
+        public Subject? Get(int id)
+        {
+            return _dbContext.Subjects.Find(id);
         }
     }
 }
