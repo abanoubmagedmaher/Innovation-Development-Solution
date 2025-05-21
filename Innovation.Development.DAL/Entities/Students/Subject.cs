@@ -9,8 +9,8 @@ namespace Innovation.Development.DAL.Entities.Students
 {
     public class Subject : BaseEntity<int>
     {
-        public required string Name { get; set; }
+        public required string? Name { get; set; }
 
-        public ICollection<Student> Students { get; set; }= new List<Student>();
+        public ICollection<Student>? Students { get; set; }= new List<Student>();
     }
 }

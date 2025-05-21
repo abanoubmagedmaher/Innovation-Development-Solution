@@ -1,4 +1,4 @@
-﻿using Innovation.Development.BLL.Models.Students;
+﻿﻿﻿using Innovation.Development.BLL.Models.Students;
 using Innovation.Development.DAL.contracts;
 using Innovation.Development.DAL.Entities.Students;
 using System;
@@ -36,28 +36,58 @@ namespace Innovation.Development.BLL.Services.Students
         }
         public int CreateStudent(CreateStudentDto student)
         {
+            // Get existing subjects from the database
+            var existingSubjects = new List<Subject>();
+            if (student.Subjects != null && student.Subjects.Any())
+            {
+                var subjectIds = student.Subjects.Select(s => s.Id).ToList();
+                existingSubjects = _unitOfWork.SubjectsRepository.GetAll()
+                    .Where(s => subjectIds.Contains(s.Id))
+                    .ToList();
+            }
+
             var StudentToCreate = new Student()
             {
                 Name = student.Name,
                 Address = student.Address,
                 DateOfBirth = student.DateOfBirth,
-                Subjects = student.Subjects
+                Subjects = existingSubjects
             };
-          
 
             _unitOfWork.StudentsRepository.Add(StudentToCreate);
             return _unitOfWork.Complete();
         }
+        
         public int UpdateStudent(StudentDto student)
         {
-            var StudentToUpdate= new Student()
+            // Get the existing student from the database
+            var existingStudent = _unitOfWork.StudentsRepository.Get(student.Id);
+            if (existingStudent == null)
             {
-                Name = student.Name,
-                Address = student.Address,
-                DateOfBirth = student.DateOfBirth,
-                Subjects = student.Subjects
-            };
-            _unitOfWork.StudentsRepository.Update(StudentToUpdate);
+                return 0; // Student not found
+            }
+
+            // Update basic properties
+            existingStudent.Name = student.Name;
+            existingStudent.Address = student.Address;
+            existingStudent.DateOfBirth = student.DateOfBirth;
+
+            // Update subjects
+            existingStudent.Subjects.Clear();
+            if (student.Subjects != null && student.Subjects.Any())
+            {
+                var subjectIds = student.Subjects.Select(s => s.Id).ToList();
+                var existingSubjects = _unitOfWork.SubjectsRepository.GetAll()
+                    .Where(s => subjectIds.Contains(s.Id))
+                    .ToList();
+                
+                foreach (var subject in existingSubjects)
+                {
+                    existingStudent.Subjects.Add(subject);
+                }
+            }
+
+            _unitOfWork.StudentsRepository.Update(existingStudent);
             return _unitOfWork.Complete();
         }
 

@@ -1,4 +1,10 @@
+using Innovation.Development.BLL.Services.Students;
+using Innovation.Development.BLL.Services.Subjects;
+using Innovation.Development.DAL.contracts;
+using Innovation.Development.DAL.contracts.Repositories;
 using Innovation.Development.DAL.Persistence.Data;
+using Innovation.Development.DAL.Persistence.Repositories;
+using Innovation.Development.DAL.Persistence.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
 namespace Innovation_Development
@@ -14,6 +20,18 @@ namespace Innovation_Development
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionStrings"))
             );
+
+            // Register repositories
+            builder.Services.AddScoped<IStudentsRepository, StudentRepository>();
+            builder.Services.AddScoped<ISubjectsRepository, SubjectRepository>();
+            
+            // Register unit of work
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            
+            // Register services
+            builder.Services.AddScoped<IStudentService, StudetService>();
+            builder.Services.AddScoped<ISubjectService, SubjectService>();
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
